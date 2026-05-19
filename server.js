@@ -25,8 +25,6 @@ mongoose
 
 const Project = require("./models/Project");
 
-process.env.JWT_SECRET = "testsecret";
-
 app.get("/api/status" , (req , res) => {
     res.json({ message: "FPMS backend connected ✅" });
 });
