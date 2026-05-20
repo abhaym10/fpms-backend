@@ -48,24 +48,37 @@ router.post("/register", async(req, res) => {
 });
 
 router.post("/login" , async(req, res) => {
-    console.log("LOGIN HIT");
+    console.log("1. LOGIN HIT");
     try {
         const {email, password} = req.body;
 
+        console.log("2. AFTER BODY");
         if (!email || !password) {
             return res.status(400).json({error: "All fields required"});
         }
 
         const user = await User.findOne({email});
 
+        console.log("3. AFTER USER FIND");
+
         if (!user) {
             return res.status(400).json({error: "Invalid credentials"});
         }
 
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(400).json({error: "Invalid credentials",});
+        console.log("4. BEFORE COMPARE");
+
+        let isMatch = false;
+
+        try {
+            isMatch = await bcrypt.compare(password, user.password);
+            console.log("COMPARE RESULT:", isMatch);
+            console.log("5. AFTER COMPARE");
+        } catch (compareErr) {
+            console.log("BCRYPT ERROR", compareErr);
+            return res.status(500).json({error: "bcrypt compare failed"});
         }
+
+        console.log("6. LOGIN SUCCESS");
 
         const token = jwt.sign(
             {id: user._id},
